@@ -44,6 +44,10 @@ public class LoginActivity extends AppCompatActivity {
                     //menyimpan status login menjadi true
                     PrefsHelper.sharedInstance(LoginActivity.this)
                             .setStatusLogin(true);
+                    //menyimpan nama ke sharedpreferences
+                    PrefsHelper.sharedInstance(LoginActivity.this)
+                            .setNama(nama);
+
                     finish();
                 }else if(nama.isEmpty() || pass.isEmpty() || nama.equals("")
                         || pass.equals("")){
