@@ -1,16 +1,24 @@
 package com.ngopidev.project.androidlatihanstorage.apphelpers;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
+import com.ngopidev.project.androidlatihanstorage.AddActivity;
 import com.ngopidev.project.androidlatihanstorage.R;
 import com.ngopidev.project.androidlatihanstorage.untukRoom.BookModel;
+import com.ngopidev.project.androidlatihanstorage.untukRoom.DatabaseExec;
 
 import java.util.ArrayList;
 
@@ -22,11 +30,13 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 
     private Context ctx;
     private ArrayList<BookModel> bookModels;
+    private DatabaseExec database;
 
     public BookAdapter(){}
     public BookAdapter(Context ctx, ArrayList<BookModel> bookModels){
         this.ctx = ctx;
         this.bookModels = bookModels;
+        database = Room.databaseBuilder(ctx.getApplicationContext(), DatabaseExec.class, "dbbuku").allowMainThreadQueries().build();
     }
 
 
@@ -39,10 +49,40 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BookViewHolder holder, final int position) {
         BookModel bookModel = bookModels.get(position);
         holder.tvNamaPenulis.setText(bookModel.bookWriter);
         holder.tvJudulBuku.setText(bookModel.bookName);
+
+        //memberikan fungsi onlongclick ke view Linear Layout
+        holder.llView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+//                Toast.makeText(ctx, "Onlongclick berhasil", Toast.LENGTH_SHORT).show();
+                final Dialog dialog = new Dialog(ctx);
+                dialog.setContentView(R.layout.dialog_detail);
+                dialog.setCancelable(true);
+                dialog.show();
+                final Button btn_edit = dialog.findViewById(R.id.btn_edit);
+                final Button btn_delete = dialog.findViewById(R.id.btn_delete);
+                btn_edit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        editBook(position);
+                        dialog.dismiss();
+                    }
+                });
+
+                btn_delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                return true;
+            }
+        });
     }
 
     @Override
@@ -52,10 +92,16 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 
     public static class BookViewHolder extends RecyclerView.ViewHolder{
         TextView tvNamaPenulis, tvJudulBuku;
+        LinearLayout llView;
         public BookViewHolder(View itemView){
             super(itemView);
             tvNamaPenulis = itemView.findViewById(R.id.tvNamaPenulis);
             tvJudulBuku = itemView.findViewById(R.id.tvJudulBuku);
+            llView = itemView.findViewById(R.id.llView);
         }
+    }
+
+    public void editBook(int position){
+        ctx.startActivity(AddActivity.getActIntent((Activity) ctx).putExtra("data", bookModels.get(position) ));
     }
 }

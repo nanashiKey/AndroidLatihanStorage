@@ -1,9 +1,11 @@
 package com.ngopidev.project.androidlatihanstorage.untukRoom;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 /**
  * created by Irfan Assidiq on 2020-02-02
@@ -17,4 +19,12 @@ public interface BookDao {
 
     @Query("select * from booktable")
     BookModel[] selectAllData();
+
+    //fungsi update book
+    @Update
+    int updateBook(BookModel bookModel);
+
+    //fungsi delete
+    @Delete
+    int deleteBook(BookModel bookModel);
 }
