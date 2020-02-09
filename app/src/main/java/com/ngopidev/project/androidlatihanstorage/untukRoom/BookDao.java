@@ -27,4 +27,8 @@ public interface BookDao {
     //fungsi delete
     @Delete
     int deleteBook(BookModel bookModel);
+
+    //fungsi get detailbyID
+    @Query("select * from booktable WHERE bookId = :id Limit 1")
+    BookModel detailbyId(int id);
 }

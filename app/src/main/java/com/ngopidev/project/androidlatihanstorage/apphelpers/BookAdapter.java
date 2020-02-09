@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.ngopidev.project.androidlatihanstorage.AddActivity;
+import com.ngopidev.project.androidlatihanstorage.DetailActivity;
 import com.ngopidev.project.androidlatihanstorage.R;
 import com.ngopidev.project.androidlatihanstorage.untukRoom.BookModel;
 import com.ngopidev.project.androidlatihanstorage.untukRoom.DatabaseExec;
@@ -54,6 +55,14 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         holder.tvNamaPenulis.setText(bookModel.bookWriter);
         holder.tvJudulBuku.setText(bookModel.bookName);
 
+        holder.llView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BookModel bModel = database.bookDao().detailbyId(bookModels.get(position).bookId);
+                ctx.startActivity(DetailActivity.getActIntent((Activity) ctx).putExtra("data", bModel));
+            }
+        });
+
         //memberikan fungsi onlongclick ke view Linear Layout
         holder.llView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -76,6 +85,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
                 btn_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        deleteBook(position);
                         dialog.dismiss();
                     }
                 });
@@ -103,5 +113,13 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 
     public void editBook(int position){
         ctx.startActivity(AddActivity.getActIntent((Activity) ctx).putExtra("data", bookModels.get(position) ));
+    }
+
+    public void deleteBook(int position){
+        database.bookDao().deleteBook(bookModels.get(position));
+        bookModels.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeRemoved(position, bookModels.size());
+        Toast.makeText(ctx, "data ke-"+(position+1)+" telah dihapus", Toast.LENGTH_SHORT).show();
     }
 }
